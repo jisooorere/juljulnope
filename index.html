@@ -368,8 +368,8 @@ async function prepareReviewPhoto(file){
  canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));
  canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);
  let quality=0.72, compressed=canvas.toDataURL('image/jpeg',quality);
- while(compressed.length>350000 && quality>0.42){quality-=0.08;compressed=canvas.toDataURL('image/jpeg',quality);}
- if(compressed.length>350000) throw new Error('사진 용량이 커요. 더 작은 사진으로 선택해주세요.');
+ while(compressed.length>320000 && quality>0.34){quality-=0.06;compressed=canvas.toDataURL('image/jpeg',quality);}
+ if(compressed.length>320000) throw new Error('사진 용량을 줄이지 못했어요. 다른 사진을 선택해주세요.');
  return compressed;
 }
 async function handleReviewPhotoChange(event){
@@ -402,7 +402,7 @@ async function submitReview(){
   for(let attempt=0;attempt<4;attempt++){
    await new Promise(resolve=>setTimeout(resolve,1200));
    await loadReviews();
-   saved=currentReviews.some(r=>r.restaurant_name===currentRestaurant&&Number(r.rating)===rating&&r.comment===comment);
+   saved=currentReviews.some(r=>r.restaurant_name===currentRestaurant&&Number(r.rating)===rating&&r.comment===comment&&(!reviewPhotoData||!!r.photo_url));
    if(saved) break;
   }
   if(!saved) throw new Error('저장 여부를 확인하지 못했어요. 잠시 후 리뷰 목록을 확인해주세요.');
